@@ -77,6 +77,12 @@ To set up the development environment do the following:
     After the dependencies have been installed, you could execute the shipped tests to ensure everything is working fine before start making changes to Checkmk.
     If you like to do this, please have a look at the [How to execute tests?](#how-to-execute-tests) chapter.
 
+> [!WARNING]
+> The contributing documentation is currently tailored towards internal
+> development at Checkmk using our infrastructure. If you are developing as
+> a third-party developer, you may be better off bootstrapping your
+> environment with this [guide](./doc/contributing/python.md).
+
 3. Install pre-commit checks
 
     In order to keep your commits to our standard we provide a [pre-commit](https://pre-commit.com/) configuration and some custom-made checking scripts.

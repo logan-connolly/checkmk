@@ -1,0 +1,44 @@
+#!/bin/bash
+# Copyright (C) 2025 Checkmk GmbH - License: GNU General Public License v2
+# This file is part of Checkmk (https://checkmk.com). It is subject to the terms and
+# conditions defined in the file COPYING, which is part of this source code package.
+
+internal_python_packages="
+cmk-agent-based
+cmk-agent-receiver
+cmk-ccc
+cmk-crypto
+cmk-events
+cmk-graphing
+cmk-livestatus-client
+cmk-messaging
+cmk-mkp-tool
+cmk-rulesets
+cmk-server-side-calls
+cmk-trace
+cmk-werks
+"
+
+if ! command -v uv >/dev/null 2>&1; then
+  echo "error: 'uv' package manager could not be found."
+  echo "https://docs.astral.sh/uv/getting-started/installation/"
+  exit 1
+fi
+
+if ! command -v psql >/dev/null 2>&1; then
+  echo "error: postgres libs are required to install 'psycopg2-binary'."
+  echo "(library)  https://www.psycopg.org/docs/install.html#install-from-source"
+  echo "(postgres) https://www.postgresql.org/download/"
+  exit 1
+fi
+
+# instantiate virtual environment
+uv venv
+
+# install external python dependencies
+uv pip install -r requirements.txt
+
+# install local checkmk packages
+for package in $internal_python_packages; do
+  uv pip install "./packages/${package}"
+done
