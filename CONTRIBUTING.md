@@ -16,6 +16,12 @@ Here are the links to major sections of this document:
 * [How to execute tests](#how-to-execute-tests)
 * [Style Guide](#style-guide)
 
+> [!WARNING]
+> This guide is mainly relevant for internal development at Checkmk. If you are
+> developing as a third-party developer, please reference the following documents:
+>  - [Python development](./doc/contributing/python.md): bootstrap, test and
+>    check changes to Python code locally.
+
 If you have questions, please create a post at the [Checkmk Forum](https://forum.checkmk.com).
 
 We are interested in all feature extensions, which fit to the product and extend it reasonably.

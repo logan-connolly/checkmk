@@ -1,0 +1,33 @@
+#!/bin/bash
+# Copyright (C) 2025 Checkmk GmbH - License: GNU General Public License v2
+# This file is part of Checkmk (https://checkmk.com). It is subject to the terms and
+# conditions defined in the file COPYING, which is part of this source code package.
+
+upstream_branch=${1:-origin/master}
+
+current_branch=$(git symbolic-ref --short -q HEAD)
+diff_revision=$(git merge-base "${current_branch}" "${upstream_branch}")
+files_changed=$(git diff --name-only "${current_branch}" "${diff_revision}")
+
+if [ -z "${files_changed}" ]; then
+  echo "No differences detected between local branch and origin/master."
+  exit 0
+fi
+
+print_stage() {
+  echo "~~~~~ ${1} ~~~~~~"
+}
+
+print_stage "Lint"
+ruff check --fix
+echo
+
+print_stage "Format"
+ruff format
+echo
+
+print_stage "Check license headers"
+echo ${files_changed} | xargs ./scripts/check-licence
+
+print_stage "Run tests"
+echo "TODO: filter only test files and run unit tests"
