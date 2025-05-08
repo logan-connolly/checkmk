@@ -1,0 +1,30 @@
+#!/bin/bash
+# Copyright (C) 2025 Checkmk GmbH - License: GNU General Public License v2
+# This file is part of Checkmk (https://checkmk.com). It is subject to the terms and
+# conditions defined in the file COPYING, which is part of this source code package.
+
+TAG=${1:-latest}
+
+BASE_IMAGE="debian:${TAG}"
+TEST_IMAGE="contributing/${BASE_IMAGE}"
+
+PYTHON_VERSION="3.12"
+
+# system requirements
+AD_REQUIREMENTS="libkrb5-dev" # python-active-directory
+LDAP_REQUIREMENTS="libldap-dev libsasl2-dev" # python-ldap
+REQUIREMENTS="python3-dev build-essential ${AD_REQUIREMENTS} ${LDAP_REQUIREMENTS}"
+
+docker build -t "${TEST_IMAGE}" --build-arg BASE_IMAGE="${BASE_IMAGE}" ./tests/contributing
+
+CONTAINER_ID=$(docker run -it -d -v ./requirements.txt:/requirements.txt "${TEST_IMAGE}" bash)
+
+echo "Installing system dependencies..." &&
+  docker exec -it "${CONTAINER_ID}" sh -c "apt update && apt install -y ${REQUIREMENTS}" &&
+  echo "Initializing virtual environment..." &&
+  docker exec -i "${CONTAINER_ID}" sh -c "uv venv --python ${PYTHON_VERSION}" &&
+  echo "Installing python dependencies..." &&
+  docker exec -i "${CONTAINER_ID}" sh -c "uv pip install -r requirements.txt"
+
+echo "Cleaning up container..."
+docker stop "${CONTAINER_ID}" && docker rm "${CONTAINER_ID}" && echo "SUCCESS"
